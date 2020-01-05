@@ -8,33 +8,11 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Vertical Padding</string>
+			<string></string>
 			<key>footerText</key>
 			<string>Pivot by Kritanta | Loosely based on AutoRotate</string>
 			<key>isStaticText</key>
 			<true/>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSliderCell</string>
-			<key>isSegmented</key>
-			<true/>
-			<key>key</key>
-			<string>verticalPad</string>
-			<key>leftImage</key>
-			<string/>
-			<key>max</key>
-			<real>100</real>
-			<key>min</key>
-			<real>0</real>
-			<key>showValue</key>
-			<true/>
-			<key>description</key>
-			<string>Vertical Padding</string>
-			<key>defaults</key>
-			<string>live.calicocat.pagebar</string>
-			<key>PostNotification</key>
-			<string>live.calicocat.pagebar/settingschanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>
