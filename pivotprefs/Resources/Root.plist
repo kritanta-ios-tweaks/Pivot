@@ -53,6 +53,34 @@
 			<string>me.kritanta.pivot/ReloadPrefs</string>
 		</dict>
 		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>me.kritanta.pivot</string>
+			<key>key</key>
+			<string>medusa</string>
+			<key>label</key>
+			<string>Enable Everywhere</string>
+			<key>PostNotification</key>
+			<string>me.kritanta.pivot/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>me.kritanta.pivot</string>
+			<key>key</key>
+			<string>invert</string>
+			<key>label</key>
+			<string>Allow Upside Down</string>
+			<key>PostNotification</key>
+			<string>me.kritanta.pivot/ReloadPrefs</string>
+		</dict>
+		<dict>
 			<key>action</key>
 			<string>respring:</string>
 			<key>cell</key>

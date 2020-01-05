@@ -11,6 +11,8 @@ NSDictionary *prefs = nil;
 // 2: iPad Style
 static int _pfMode = 1;
 static BOOL _pfDontRotateWallpaper = YES;
+static BOOL _pfMedusa = YES;
+static BOOL _pfInvert = YES;
 static CGFloat _pfVPad = 5;
 
 // 2 = Plus Style
@@ -19,7 +21,23 @@ static CGFloat _pfVPad = 5;
 static int _rtRotationStyle = 2;
 
 
+%hook SBApplication
+- (BOOL)isMedusaCapable 
+{
+    if (_pfMedusa) 
+    {
+	    return YES;
+    }
+    return %orig;
+}
+%end
+
 %hook SpringBoard
+
+- (BOOL)supportsPortraitUpsideDownOrientation
+{
+    return _pfInvert;
+}
 
 - (NSUInteger)homeScreenRotationStyle
 {
@@ -42,7 +60,6 @@ static int _rtRotationStyle = 2;
 }
 
 %end 
-
 
 
 %hook SBIconListGridLayoutConfiguration 
@@ -70,6 +87,74 @@ static int _rtRotationStyle = 2;
 
 %end
 
+
+@interface _UIStatusBar : UIView 
+@property (nonatomic, assign) NSInteger orientation;
+@end 
+
+@interface _UIStatusBarStringView : UILabel 
+@end
+
+
+@interface _UIStatusBarCellularSignalView : UIView
+@end
+
+/*
+
+%hook _UIStatusBarCellularSignalView
+
+// %orig(CGRectMake(31, 24, frame.size.width, frame.size.height));
+
+
+- (void)layoutSubviews
+{
+    %orig;
+    @try
+    {
+        _UIStatusBar *bar = (_UIStatusBar *)self.superview.superview;
+        if (UIDeviceOrientationIsLandscape(bar.orientation))
+        {
+            [self setFrame:CGRectMake(27, 20, self.frame.size.width, self.frame.size.height)];
+            return;
+        }
+    }
+    @catch (NSException *ex)
+    {
+
+    }
+}
+
+%end
+
+
+%hook _UIStatusBarStringView
+
+- (BOOL)prefersBaselineAlignment
+{
+    return NO;
+}
+
+- (void)layoutSubviews
+{
+    %orig;
+    @try
+    {
+        _UIStatusBar *bar = (_UIStatusBar *)self.superview.superview;
+        if (UIDeviceOrientationIsLandscape(bar.orientation))
+        {
+            [self setFrame:CGRectMake(18, 35, self.frame.size.width, self.frame.size.height)];
+            return;
+        }
+    }
+    @catch (NSException *ex)
+    {
+
+    }
+}
+
+
+%end
+*/
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //
@@ -114,6 +199,8 @@ static void preferencesChanged()
 
     _pfMode = [[prefs valueForKey:@"rotationMode"] integerValue] ?: 1;
     _pfDontRotateWallpaper = [prefs objectForKey:@"lockWallpaper"] ? [[prefs valueForKey:@"lockWallpaper"] boolValue] : YES;
+    _pfMedusa = [prefs objectForKey:@"medusa"] ? [[prefs valueForKey:@"medusa"] boolValue] : YES;
+    _pfInvert = [prefs objectForKey:@"invert"] ? [[prefs valueForKey:@"invert"] boolValue] : YES;
     _pfVPad = [[prefs valueForKey:@"verticalPad"] floatValue] ?: 5.0;
 
     if (_pfMode == 1) _rtRotationStyle = 2; 
