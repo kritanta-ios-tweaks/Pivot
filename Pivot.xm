@@ -74,7 +74,7 @@ static int _rtRotationStyle = 2;
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //
 //
-// NotToday Preferences
+// Pivot Preferences
 // #pragma Preferences
 //
 //
@@ -124,7 +124,7 @@ static void preferencesChanged()
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //
 //
-// NotToday Constructor
+// Pivot Constructor
 // #pragma ctor
 //
 //
