@@ -18,7 +18,7 @@ static CGFloat _pfVPad = 5;
 // 2 = Plus Style
 // 1 = iPad Style
 // Anything else disables it. 
-static int _rtRotationStyle = 2;
+static int _rtRotationStyle = 1;
 
 
 %hook SBApplication
@@ -203,9 +203,7 @@ static void preferencesChanged()
     _pfInvert = [prefs objectForKey:@"invert"] ? [[prefs valueForKey:@"invert"] boolValue] : YES;
     _pfVPad = [[prefs valueForKey:@"verticalPad"] floatValue] ?: 5.0;
 
-    if (_pfMode == 1) _rtRotationStyle = 2; 
-    else if (_pfMode == 2) _rtRotationStyle = 1;
-    else _rtRotationStyle = 0;
+    if (_pfMode != 2) _rtRotationStyle = _pfMode * 2; 
 }
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
