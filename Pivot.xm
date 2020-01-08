@@ -20,24 +20,83 @@ static CGFloat _pfVPad = 5;
 // Anything else disables it. 
 static int _rtRotationStyle = 2;
 
+%group iOS6to12
 
-%hook SBApplication
-- (BOOL)isMedusaCapable 
+
+
+%hook SBRootIconListView 
+
+
++ (NSUInteger)iconColumnsForInterfaceOrientation:(NSInteger)arg1
 {
-    if (_pfMedusa) 
-    {
-	    return YES;
-    }
+    if (UIDeviceOrientationIsLandscape(arg1))
+        return [%c(SBRootIconListView) iconRowsForInterfaceOrientation:1];
     return %orig;
 }
+
++ (NSUInteger)iconRowsForInterfaceOrientation:(NSInteger)arg1
+{
+    if (UIDeviceOrientationIsLandscape(arg1))
+        return [%c(SBRootIconListView) iconColumnsForInterfaceOrientation:1];
+    return %orig;
+}
+
+- (NSUInteger)iconRowsForSpacingCalculation
+{
+    if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation))
+        return [%c(SBRootIconListView) iconColumnsForInterfaceOrientation:1];
+    return %orig;
+}
+
++ (NSUInteger)maxVisibleIconRowsInterfaceOrientation:(NSInteger)arg1
+{    
+    if (UIDeviceOrientationIsLandscape(arg1))
+        return [%c(SBRootIconListView) iconColumnsForInterfaceOrientation:1];
+    return %orig;
+}
+
 %end
 
-%hook SpringBoard
 
-- (BOOL)supportsPortraitUpsideDownOrientation
+%end
+
+%group iOS7Down
+
+
+%hook SBOrientationLockManager
+
+- (void)setLockOverrideEnabled:(BOOL)enabled forReason:(NSString *)reason
 {
-    return _pfInvert;
+	if ([reason isEqualToString:@"SBOrientationLockForSwitcher"])
+		enabled = NO;
+	%orig();
 }
+
+%end
+
+%end
+
+
+%group iOS7Up
+
+
+%hook SBWallpaperController
+
+-(BOOL)_isAcceptingOrientationChangesFromSource:(NSInteger)arg
+{
+    return (!_pfDontRotateWallpaper);
+}
+
+%end 
+
+
+%end
+
+
+
+%group iOS8Up
+
+%hook SpringBoard
 
 - (NSUInteger)homeScreenRotationStyle
 {
@@ -51,15 +110,82 @@ static int _rtRotationStyle = 2;
 
 %end
 
+%end
 
-%hook SBWallpaperController
 
--(BOOL)_isAcceptingOrientationChangesFromSource:(NSInteger)arg
+
+%group iOS9Up
+
+
+%hook SpringBoard
+
+- (BOOL)supportsPortraitUpsideDownOrientation
 {
-    return (!_pfDontRotateWallpaper);
+    return _pfInvert;
 }
 
-%end 
+%end
+
+
+%hook SBApplication
+
+- (BOOL)isMedusaCapable 
+{
+    if (_pfMedusa) 
+    {
+	    return YES;
+    }
+    return %orig;
+}
+
+%end
+
+
+%hook SBHomeScreenViewController
+
+- (BOOL)homeScreenAutorotatesEvenWhenIconIsDragging 
+{
+    if (_pfMode !=0) 
+    {
+        return TRUE;
+    }
+    return %orig;
+}
+
+- (void)setHomeScreenAutorotatesEvenWhenIconIsDragging:(BOOL)arg1 
+{
+    if (_pfMode !=0) 
+    {
+        arg1 = TRUE;
+        return %orig(arg1);
+    }
+    return %orig;
+}
+
+%end
+
+
+%end
+
+
+%group iOS10Up
+
+
+%hook SBDashBoardViewController
+- (BOOL)shouldAutorotate 
+{
+    if(_pfMode != 0) 
+    {
+        return TRUE;
+    }
+
+    return %orig;
+}
+%end
+
+%end
+
+%group iOS13
 
 
 %hook SBIconListGridLayoutConfiguration 
@@ -87,74 +213,8 @@ static int _rtRotationStyle = 2;
 
 %end
 
-
-@interface _UIStatusBar : UIView 
-@property (nonatomic, assign) NSInteger orientation;
-@end 
-
-@interface _UIStatusBarStringView : UILabel 
-@end
-
-
-@interface _UIStatusBarCellularSignalView : UIView
-@end
-
-/*
-
-%hook _UIStatusBarCellularSignalView
-
-// %orig(CGRectMake(31, 24, frame.size.width, frame.size.height));
-
-
-- (void)layoutSubviews
-{
-    %orig;
-    @try
-    {
-        _UIStatusBar *bar = (_UIStatusBar *)self.superview.superview;
-        if (UIDeviceOrientationIsLandscape(bar.orientation))
-        {
-            [self setFrame:CGRectMake(27, 20, self.frame.size.width, self.frame.size.height)];
-            return;
-        }
-    }
-    @catch (NSException *ex)
-    {
-
-    }
-}
-
 %end
 
-
-%hook _UIStatusBarStringView
-
-- (BOOL)prefersBaselineAlignment
-{
-    return NO;
-}
-
-- (void)layoutSubviews
-{
-    %orig;
-    @try
-    {
-        _UIStatusBar *bar = (_UIStatusBar *)self.superview.superview;
-        if (UIDeviceOrientationIsLandscape(bar.orientation))
-        {
-            [self setFrame:CGRectMake(18, 35, self.frame.size.width, self.frame.size.height)];
-            return;
-        }
-    }
-    @catch (NSException *ex)
-    {
-
-    }
-}
-
-
-%end
-*/
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //
@@ -229,4 +289,19 @@ static void preferencesChanged()
         NULL,
         CFNotificationSuspensionBehaviorDeliverImmediately
     );
+    
+    if (kCFCoreFoundationVersionNumber > 840) 
+        %init(iOS7Up);
+    if  (kCFCoreFoundationVersionNumber < 1000)
+        %init(iOS7Down);
+    if (kCFCoreFoundationVersionNumber > 1000)
+        %init(iOS8Up);
+    if (kCFCoreFoundationVersionNumber > 1200)
+        %init(iOS9Up);
+    if (kCFCoreFoundationVersionNumber > 1300)
+        %init(iOS10Up);
+    if (kCFCoreFoundationVersionNumber > 1600)
+        %init(iOS13);
+    else 
+        %init(iOS6to12);
 }

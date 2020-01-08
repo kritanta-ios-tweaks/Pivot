@@ -4,7 +4,7 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 # Comment this out to enable debug versions
 PACKAGE_VERSION=$(THEOS_PACKAGE_BASE_VERSION)
 
-ARCHS = arm64 arm64e
+ARCHS = armv6 armv7 arm64 arm64e
 
 # Target iOS 10+ Devices, and use the iOS 11.2 SDK
 TARGET = iphone:clang:11.2:10.0
