@@ -183,6 +183,73 @@ static int _rtRotationStyle = 2;
 }
 %end
 
+%hook SBCoverSheetWindow
+
+- (BOOL)_shouldAutorotateToInterfaceOrientation:(NSInteger)arg checkForDismissal:(BOOL)arg1 isRotationDisabled:(BOOL *)arg2
+{
+    BOOL x = %orig;
+
+    return (_pfMode != 0) ? YES : x;
+}
+
+- (BOOL)_shouldAutorotateToInterfaceOrientation:(NSInteger)arg
+{
+    BOOL x = %orig; 
+
+    return (_pfMode != 0) ? YES : x;
+}
+
+%end
+
+%hook SBCoverSheetPrimarySlidingViewController 
+
+- (BOOL)shouldAutorotate 
+{
+    return (_pfMode != 0) ? YES : %orig;
+}
+
+%end
+
+%hook CSCoverSheetViewController 
+
+- (BOOL)shouldAutorotate
+{
+    return (_pfMode != 0) ? YES : %orig;
+}
+
+- (BOOL)shouldAutorotateForSource:(int)arg 
+{
+    return (_pfMode != 0) ? YES : %orig(arg);
+}
+
+%end
+
+@interface SparkAlwaysOnWindow : UIWindow
+@end
+
+@interface PivotSparkRotationController : UIViewController
+@end
+
+@implementation PivotSparkRotationController
+ - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+    {
+        return YES;
+    }
+@end
+
+%hook SparkAlwaysOnWindow 
+
+- (id)initWithFrame:(CGRect)frame 
+{
+    id x = %orig;
+
+    self.rootViewController = [[PivotSparkRotationController alloc] init];
+
+    return x;
+}
+%end
+
+
 %end
 
 %group iOS13
