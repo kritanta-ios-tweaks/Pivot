@@ -359,10 +359,10 @@ static void preferencesChanged()
     
     if (kCFCoreFoundationVersionNumber > 840) 
         %init(iOS7Up);
-    if  (kCFCoreFoundationVersionNumber < 1000)
-        %init(iOS7Down);
     if (kCFCoreFoundationVersionNumber > 1000)
         %init(iOS8Up);
+    else 
+        %init(iOS7Down);
     if (kCFCoreFoundationVersionNumber > 1200)
         %init(iOS9Up);
     if (kCFCoreFoundationVersionNumber > 1300)
